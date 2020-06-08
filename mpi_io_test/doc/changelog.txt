@@ -1,0 +1,16 @@
+Version 1.000.08
+February 14, 2006
+
+Added "-barrier" option to mpi_io_test.c. This required adding 2 more arguments to function collect_and_print_time. They are "double barrier_wait_time" and "int barrier_flag". Also added the latter argument to print_input_environment and show_usage. Made function defs in print.h consistent with these changes. Made changes to the routines below consistent with the description above.
+
+Version 1.000.07
+September 16, 2005
+
+Replaced old copyright with the BSD copyright notice. The
+MPI-IO test is now open source.
+
+Version 1.000.06
+September 7, 2005
+
+Removed -seek option; this was an abuse of the
+MPI_File_set_view routine.

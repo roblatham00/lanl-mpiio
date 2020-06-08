@@ -1,0 +1,131 @@
+This readme provides details for using x-y-parser.pl.  This perl
+script was developed based on a need to automate the process
+of taking relevant io and network result data and plotting it.  The
+script opens a result file and parses out columns based on the
+user's selection for x and y columns.  The resulting output 
+file(s) is intended to be used by the cts_diff.pl script which was 
+developed by a Collaborative Test System (CTS)team member. cts_diff.pl can 
+perform diffs on the input files and/or plot data.  The plots are
+written in post script and pdf file formats.
+
+The options for x-y-parser are given below:
+
+sub print_usage
+{
+  print "Usage:  x_y_parser.pl -t[netperf|io_test|general] -x[x_coordinate_name|column_number]\n";
+  print "                      -y[y_coordinate_name|column_number] -f[input_file]\n";
+  print "                      -s[start_line] -e[end_line] -d[dataset_name]\n";
+  print "                      -k[offset] -m[x_axis_label] -n[y_axis_label]\n";
+  print "                      -a   -c[column number]  -l[legend file name]\n";
+  print "\n";
+  print "             Options s, e, k, m, and n are optional\n";
+  print "             Options c and l are used together for io test data\n";
+  print "\n";
+  print "Where\n";
+  print "  -h display this info\n";
+  print "  -t type of test result data\n";
+  print "  -x x column data to parse from file. See below for choices\n";
+  print "  -y y column data to parse from file. See below for choices\n";
+  print "  -s starting line for retrieving data from input file\n";
+  print "  -e ending line for retrieving data from input file\n";
+  print "  -f input file containg data to parse\n";
+  print "  -k data offset - pick first n lines from each dataset\n";
+  print "  -d dataset name - used to label plot\n";
+  print "  -m x axis name - used to label plot.\n";
+  print "  -n y axis name - used to label plot.\n";
+  print "       NOTE:  for x and y labels, use quotes (\" \") around label\n";
+  print "              title to preserve spaces and or special characters\n";
+  print "              example  -m\"Time (secs)\" -n\"BW (MB/sec)\"\n";
+  print "  -a append data to output_file (useful for iotests)\n";
+  print "     this creates multiple datasets per file\n";
+  print "  -c specify column to use as lines for legend (i.e proc count, message size)\n";
+  print "  -l output file identifier i.e. -l_Procs or -l_MBs The program will \n";
+  print "     concatanate the specific column number to the identifier to \n";
+  print "     name the file i.e. 2_Procs, 8_Procs......\n";
+  print "\n";
+  print "X and Y choices for io_test:\n";
+  print "\n";
+  print " x and y are single integers specifying a column number\n";
+  print "\n";
+  print "X and Y choices for netperf:\n";
+  print " rx_socket_size\n";
+  print " tx_socket_size\n";
+  print " tx_message_size\n";
+  print " elapsed_time\n";
+  print " throughput\n";
+  print " tx_utilization\n";
+  print " rx_utilization\n";
+  print " service_tx\n";
+  print " demand_rx\n";
+  exit 0;
+}
+
+Prior to providing examples, additional discussion of options is necessary.
+
+I/O TESTS
+
+Our use of cts_diff.pl is based on a dataset component.  The dataset is basically
+a list of x and y values that will be diffed and/or plotted.  It pertains to one 
+set of data, i.e results from one type of test.  x-y-parser uses the -d, -m, and -n
+option to name the dataset, specify the x axis label, and specify the y axis label 
+respectively.  These options along with the data are written to a file that cts_diff.pl 
+reads.  If the -a option is selected along with -tio_test, data is appended to the end
+of the file, thus creating multiple datasets within a file.  Multiple datasets 
+within a file results in cts_diff.pl creating one pdf file with multiple plots (one 
+plot per page).  
+
+Current implementation of x-y-parser.pl, with -tio_test option creates various 
+files which represent the results for a user specified column such as number of 
+processors or message size.
+For example if the user specifies -c1 and -l_Procs as arguments, various files
+will be created pased on column 1 (-c option) which in this example is number of processors.
+So resulting files will be 2_Procs, 8_Procs,...etc (_Procs comes
+from -l option), if the column has data points 2 and 8.
+These files are used by cts_diff.pl to plot lines representing 2_Procs and 8_Procs
+on the same plot (same plot if same dataset).
+
+If the file 2_Procs has five datasets than five different 
+plots will be created.  A line representing 2 processors will appear on each plot.  If
+cts_diff.pl is given 3 files (2_Procs, 8_Procs and 16_Procs) each having 5 datasets of
+the same name, then one pdf file with 5 plots will be created.  Each x/y plot will have 
+3 lines representing the data for 2 processors, 8 processors and 16 processors. 
+Creating multiple datasets is accomplished by using the -a option with -tio_test.  
+
+This can be done in a script as follows
+
+#!/bin/sh
+./x-y-parser.pl -x2 -y4 -tio_test -fi0_results.txt -D"Write BW" -m"Msg Size" -n"BW -a -c1 -l_Plots
+./x-y-parser.pl -x2 -y5 -tio_test -fi0_results.txt -D"Read BW"  -m"Msg Size" -n"BW -a -c1 -l_Plots
+./x-y-parser.pl -x1 -y4 -tio_test -fi0_results.txt -D"Write BW" -m"Proc Cnt" -n"BW -a -c1 -l_Plots
+
+# run cts_diff util to plot data
+./cts_diff.pl -presult -ft cts -no_intp -plot_orig 2_Procs 8_Procs 16_Procs 
+
+Refering to the above script, x-y-parser.pl currently reads the first column from the -c 
+arg has the number of processors.  Based on this column, x-y-parser.pl will create files 
+representing the number of processors.  In the above script, we are assuming that the 
+input file io_results.txt only has processor counts of 2, 8, and 16 so 3 files are 
+created: 2_Procs, 8_Procs, and 16_Procs (the _Procs portion of the filename comes from
+the -l option).  Each execution of x-y-parser.pl creates
+a new dataset and these are appended to the end of each *_Procs file (due to the 
+-a option).
+
+other options include -s and -e for specifying starting and ending lines respectively.
+This allows the user to specify the starting and ending positions to scan and parse
+within a data file.  The -k option allows for parsing only the first n lines per
+data set.  
+
+NETPERF TESTS
+
+cts_diff.pl can parse netperf results in one of two ways:  by specifying column numbers
+or by naming the desired x and y columns.  Here is an example using named columns
+
+./x-y-parser.pl -xrx_socket_size -ythrouhput -tnetperf -fnet.out -D"Netperf_BW" 
+-m"RX Socket Size"  -n"BW"
+
+results are currently written to netperf.out (this will change in the future to
+a user specified file).
+
+GENERAL 
+This option applies to a input file containing columns of data only.  x and y columns
+are written to the output file name with the .out extension.

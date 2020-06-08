@@ -1,0 +1,64 @@
+#!/bin/tcsh
+
+set basepath  = $1
+set V         = $2
+
+rm -f ${V}_ALL_runs.txt
+rm -f ${V}_BEST_run.txt
+ 
+foreach test_case( nn pnn n1 pn1 s1 ps1 )
+
+if (${test_case} == "nn" ) set test_title = "MPI-IO_N_to_N_____________Test---${V}"
+if (${test_case} == "pnn") set test_title = "POSIX__N_to_N_____________Test---${V}"
+if (${test_case} == "n1" ) set test_title = "MPI-IO_N_to_1_NON-STRIDED_Test---${V}"
+if (${test_case} == "pn1") set test_title = "POSIX__N_to_1_NON-STRIDED_Test---${V}"
+if (${test_case} == "s1" ) set test_title = "MPI-IO_N_to_1_____STRIDED_Test---${V}"
+if (${test_case} == "ps1") set test_title = "POSIX__N_to_1_____STRIDED_Test---${V}"
+
+rm -f ${test_title}*
+rm -f *_Procs
+
+set outputa   = ${test_title}.ALLruns
+set outputb   = ${test_title}.BESTrun
+
+echo ${outputa}
+echo ${outputb}
+
+./io_tests_parse.pl -label M -pess          -output ${outputa} ${basepath}/${test_case}*
+./io_tests_parse.pl -label M -pess -besteff -output ${outputb} ${basepath}/${test_case}*
+
+cat ${outputa} >> ${V}_ALL_runs.txt
+cat ${outputb} >> ${V}_BEST_run.txt
+
+./x-y-parser.pl -x2 -y4  -tio_test -f${outputa} -d"(a) ${outputa}: Write Bandwidth-NET  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y4  -tio_test -f${outputb} -d"(b) ${outputb}: Write Bandwidth-NET  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y6  -tio_test -f${outputa} -d"(c) ${outputa}: Write Bandwidth-RAW  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y6  -tio_test -f${outputb} -d"(d) ${outputb}: Write Bandwidth-RAW  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y8  -tio_test -f${outputa} -d"(e: ${outputa}: Write File Open  Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x2 -y8  -tio_test -f${outputb} -d"(f) ${outputb}: Write File Open  Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y8  -tio_test -f${outputa} -d"(g) ${outputa}: Write File Open  Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y8  -tio_test -f${outputb} -d"(h) ${outputb}: Write File Open  Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x2 -y9  -tio_test -f${outputa} -d"(i) ${outputa}: Write File Close Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x2 -y9  -tio_test -f${outputb} -d"(j) ${outputb}: Write File Close Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y9  -tio_test -f${outputa} -d"(k) ${outputa}: Write File Close Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y9  -tio_test -f${outputb} -d"(l) ${outputb}: Write File Close Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+
+./x-y-parser.pl -x2 -y12 -tio_test -f${outputa} -d"(m) ${outputa}: Read  Bandwidth-NET  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y12 -tio_test -f${outputb} -d"(n) ${outputb}: Read  Bandwidth-NET  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y14 -tio_test -f${outputa} -d"(o) ${outputa}: Read  Bandwidth-RAW  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y14 -tio_test -f${outputb} -d"(p) ${outputb}: Read  Bandwidth-RAW  " -m"Message Size (MB)  " -n"Minimum_Bandwidth (MB/sec)" -a
+./x-y-parser.pl -x2 -y16 -tio_test -f${outputa} -d"(q) ${outputa}: Read  File Open  Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x2 -y16 -tio_test -f${outputb} -d"(r) ${outputb}: Read  File Open  Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y16 -tio_test -f${outputa} -d"(s) ${outputa}: Read  File Open  Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y16 -tio_test -f${outputb} -d"(t) ${outputb}: Read  File Open  Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x2 -y17 -tio_test -f${outputa} -d"(u) ${outputa}: Read  File Close Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x2 -y17 -tio_test -f${outputb} -d"(v) ${outputb}: Read  File Close Time" -m"Message Size (MB)  " -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y17 -tio_test -f${outputa} -d"(w) ${outputa}: Read  File Close Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+./x-y-parser.pl -x1 -y17 -tio_test -f${outputb} -d"(x) ${outputb}: Read  File Close Time" -m"Number of Processes" -n"Maximum_Time_(sec)"         -a 
+
+# run cts_diff util to plot data
+./cts_diff.pl -presult -ft cts -no_intp -plot_orig 2_Procs 8_Procs 16_Procs 32_Procs 48_Procs 64_Procs 80_Procs 96_Procs 112_Procs 128_Procs 144_Procs 160_Procs 176_Procs 192_Procs
+
+mv cts_diff.pdf ${test_title}.pdf
+
+end

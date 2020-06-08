@@ -1,0 +1,23 @@
+# this files specfies the headers for iotest outputs (standard runs)
+############################
+#
+#  HEADER FOR STANDARD DATA
+#
+#
+############################
+# Num 	Size	Num 	Effective Bandwidth 						Total 							Write Bandwidth 						Write  								File Open							File Close							Write Wait 							Effective Bandwidth 						Total 								Read Bandwidth 							Read  								File Open							File Close							Read Wait 
+# Procs Obj(B)	Obj 	(MB/sec) 							Time (sec.)	 					(MB/sec) 							Time (sec.) 							Time (sec) 							Time (sec) 							Time (sec.) 							(MB/sec) 							Time (sec.)	 						(MB/sec) 							Time (sec.) 							Time (sec) 							Time (sec) 							Time (sec.) 
+# 			(min 	avg 	max) 						(min 	avg 	max) 					(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max)						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max)
+
+
+
+############################
+#
+#  HEADER FOR WRITE SYNC DATA
+#
+#
+############################
+
+# Num 	Size	Num 	Effective Bandwidth 						Total 							Write Bandwidth 						Write  								File Open							File Close							Write Wait 					File Sync 							Effective Bandwidth 						Total 								Read Bandwidth 							Read  								File Open							File Close							Read Wait 
+# Procs Obj(B)	Obj 	(MB/sec) 							Time (sec.)	 					(MB/sec) 							Time (sec.) 							Time (sec) 							Time (sec) 							Time (sec.) 					Time (sec) 							(MB/sec) 							Time (sec.)	 						(MB/sec) 							Time (sec.) 							Time (sec) 							Time (sec) 							Time (sec.) 
+# 			(min 	avg 	max) 						(min 	avg 	max) 					(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max)				(min 	avg 	max)						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max) 						(min 	avg 	max)
